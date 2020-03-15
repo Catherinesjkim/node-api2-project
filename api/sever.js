@@ -12,18 +12,17 @@ server.use(express.json()); // middleware
 // you are not writing source code for the computer
 // source code is for the communication medium for future myself or another human developer - just .send, that's not clear
 server.get('/', (req, res) => {
-  res.send(`
-    <h2>Blog Posts API</h2>
-    <p>Welcome to the Blog Posts API!</p>
-  `);
+  const query = req.query;
+
+  console.log('query', query)
+
+  res.status(200).json(query);
 });
 
 //! MOST CRITICAL PART
 // The router handles endppoints that begins with /api/posts
 server.use('/api/posts', postsRouter);
 
-
 // in the server, I don't want to handle all of the routers
 // Break up by feature or by resource. Blogs is a resource. 
-
 module.exports = server; // exporting server

@@ -19,11 +19,17 @@
 | The noun doesn't have to be plural but that's the industry standard. Pick one and be consistent!
 | PATCH is a partial update
 
-| Non REST API/URL:  v.  REST API/URL:       ||   Actions with Express using HTTP Method - CRUD
-| /listAllLessons        /api/lessons             GET - Read
-| /createLesson          /api/lessons             POST - Create (body)
-| /deleteLesson          /api/lessons/{id}        DELETE - Delete (dynamic id)
-| /updateUser            /api/users/{id}          PATCH/PUT (whole obj) - Update - (dynamic id)
+| Non REST API/URL:  v.  REST API/URL:        ||   Actions with Express using HTTP Method - CRUD
+| :---------------------------------------------------------------------------------------------:
+| /listAllLessons        /api/lessons              GET - Read
+| /createLesson          /api/lessons              POST - Create (body)
+| /deleteLesson          /api/lessons/{id}         DELETE - Delete (dynamic id)
+| /updateUser            /api/users/{id}           PATCH/PUT (whole obj) - Update - (dynamic id)
+| /listPostMessages      /api/posts/{id}/messages  GET
+| /viewMessage           /api/messages/{id}        GET
+
+Slack: Emojis are a good example of sub-routes
+Facebook: show me the account first and then the followers
 
 | HATEOAS (Hypermedia As The Engine Of Application State): It makes RESTful API fully RESTful like Github API. API sends you data and links to the next, previous, and last page as part of the response you get. 
 
@@ -78,31 +84,27 @@ axios
 - Business Logic layer/code: Unique for every app
 - Database layer/code: Most apps need to save/persist data 
 
-## Using Query String Parameters
+## Using Query String Parameters - Disecting the URL
 
 https://www.google.com/search?q=mdn+query+string+parameters&oq=mdn+query+string+parameters
 
 Domain
 https://www.google.com
 
-Path Endpoint
+Endpoint
 /search
 
 ?           -----> marks the beginning of the query string
 
-Who is making sure of assembling this URL? Client. We have to construct this query string
+Who is responsible of assembling this query string/URL, who is making the request? Client. As a React developer, we have to construct this query string
 
 source=hp   -----> key/value pair
 
-&           -----> separates key/value pair
+&           -----> separates key/value pair - ampercent
 
-q = mdn+query+string+parameters
+q = mdn+query+string+parameters -----> key/value pair
 
-&
-
-oq = mdn+query+string+parameters
-
-Express will parse the query string into an object
+Express will parse the query string into an object on the server side
 
 ```js
 req.query = { // API developer only cares about this
@@ -111,7 +113,35 @@ req.query = { // API developer only cares about this
 };
 ```
 
+db: should happen on the server - the server should do the conversion. Send only the data that the client needs
+
+client_age -------> age 
+client_age -------> clientAge
+
+
 You can only send info to the body by doing a POST or Update
 
-db: should happen on the server - it's the job of the server
-client_age -------> clientAge
+Through the query string on the API you have access to read extra info for the client. 
+
+GET: Filtering, pagination, send extra data. 
+
+Sorting on Postman
+
+GET: localhost:5000/api/post?limit=3
+
+GET: localhost:5000/api/post?limit=3&sortby=name
+
+GET: localhost:5000/api/post?limit=3&sortdir=desc
+
+GET: localhost:5000/api/post?limit=3&sortdir=desc&sortby=name&page=2
+
+
+PROJECT:
+
+Blog Post Schema: One router for the Blog Post
+If you would like to test 500 error message, don't save the title 
+
+Comment Schema: One router for the Comment Schema
+give me a valid id for the POST
+
+Validation: if else statement. 
