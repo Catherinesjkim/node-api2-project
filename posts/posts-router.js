@@ -82,11 +82,11 @@ router.post("/", (req, res) => {
   const { title, contents } = req.body;
 
   !title || !contents // either or - if one of them is missing, err
-  ? res.status(400).json({ errorMessage: "Please provide title and contents for the post.", err }) // Bad Request response - Worked on postman
+  ? res.status(400).json({ errorMessage: "Please provide title and contents for the post." }) // Bad Request response - Worked on postman
   : Posts
     .insert(req.body)
     .then(post => {
-      res.status(201).json(req.body); // Created - Successful response - Not working on postman
+      res.status(201).json(req.body); // Created - Successful response - working on postman
     })
     .catch(error => {
       // log error to database
@@ -96,7 +96,7 @@ router.post("/", (req, res) => {
       });
     });
 });
-// Postman: keep getting 404 error response - Fixed with Giovani's code .first(); on db.js
+// Working on Postman
 
 // MH
 // router.post('/', (req, res) => {

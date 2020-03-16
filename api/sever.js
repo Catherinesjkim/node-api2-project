@@ -8,8 +8,7 @@ const server = express(); // express obj
 // server.use(cors());
 server.use(express.json());
 
-server.use(express.json()); // middleware
-// server.use('/posts', postsRouter);
+server.use('/api/posts', postsRouter); // middleware
 
 server.get('/', (req, res) => {
   res.send('We are receiving data from Blogs Post API')
