@@ -9,6 +9,7 @@ const server = express(); // express obj
 server.use(express.json());
 
 server.use('/api/posts', postsRouter); // middleware
+// server.use('/posts', postsRouter);
 
 server.get('/', (req, res) => {
   res.send('We are receiving data from Blogs Post API')
