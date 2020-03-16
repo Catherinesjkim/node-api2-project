@@ -104,20 +104,19 @@ router.delete("/:id", (req, res) => {
   const { id } = req.params;
 
   Posts
-    .remove(id)
-    .then(deleted => {
-      if (deleted) {
-      res.status(200).json(
-        { message: `Post ${id} was deleted.` }
-        ); // the id was deleted successfully - response back with id - returns #1 - worked on postman
-    } else {
-        res.status(404).json(// Not found - the id didn't exist in the first place - worked postman
-        { message: "The post with the specified ID does not exist."}); 
-        }
+    .findById(id)
+    .then(post => {
+      post ? 
+        Posts
+          .remove(id)
+          .then(deleted => {
+            deleted ? res.status(200).json({ message: `Post ${id} was deleted`, info: (post) }) : res.status(404).json({ message: "The post with the specified ID does not exist."}); 
+        })
+      : null
       })
       .catch(err => { // catch all for the exceptions
         res.status(500).json(
-          { errorMessage: "The user could not be removed" }) // Delete server error
+          { message: "The post could not be removed" }) // Delete server error
       })
 })
 // Worked on Postman
