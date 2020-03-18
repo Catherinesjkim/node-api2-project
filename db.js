@@ -53,7 +53,7 @@ function findPostComments(postId) { // GET for a specific comment
     .join('posts', 'posts.id', 'post_id')
     .select('comments.*', 'title as post')
     .where('post_id', postId)
-    .first(); // added code
+    // .first(); // added code
 }
 
 function findCommentById(id) {

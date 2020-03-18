@@ -231,7 +231,7 @@ First data base method
 //     console.log("Post ID: ", postId);
 //     console.log("Comment Post ID: ", comment[0].post_id);
 
-//     // postId came out of an URL, so it's a string
+//     postId came out of an URL, so it's a string
 //     Number(postId) !== comment[0].post_id
 //     ? res.status(404).json({ success: false, message: "Comment not found" })
 //     : res.status(200).json(comment)
@@ -256,7 +256,7 @@ router.get('/:id/comments', (req, res) => {
   Posts
     .findPostComments(id)
     .then(data => { // 200 response working on postman
-      data ? 
+      data.length >= 1 ? 
         res.status(200).json(data) 
       : res.status(404).json({ message: 'The Post ID Does NOT Exist.' }) // 404 working on postman
     }) // If there's data, return 200. If not, return 404
