@@ -28,7 +28,7 @@ router.get("/", (req, res) => {
       console.log(error);
       res.status(500).end.json({
         error: "The posts info could not be retrieved",
-      }); // Not possible to reproduce this error on postman for GET request
+      }); // Not possible to reproduce this error on postman for GET request unless manipulated in db.js
     });
 });
 // Worked on Postman
@@ -42,7 +42,7 @@ router.get("/", (req, res) => {
 // return the following JSON object: { error: "The post information could not be retrieved." }
 // every dynamic param in the URL, it's going to show up in req.params.id - promise .then - always use promise when using a db. 
 router.get("/:id", (req, res) => {
-  const { id } = req.params.id;
+  const { id } = req.params;
 
   Posts
     .findById(id)
@@ -60,7 +60,7 @@ router.get("/:id", (req, res) => {
       console.log(error);
       res.status(500).end.json({
         message: "The post information could not be retrieved." 
-      }); // Not possible to reproduce this error on postman for GET request
+      }); // Not possible to reproduce this error on postman for GET request unless manipuated on db.js
     });
 });
 // Worked on Postman
@@ -69,8 +69,7 @@ router.get("/:id", (req, res) => {
 // If the req.body is missing the title or contents property: cancel the request.
 // respond with HTTP status code 400 (Bad Request).
 // return the following JSON response: { errorMessage: "Please provide title and contents for the post." }
-// ## post: { title:'I wish the ring had never come to me. I wish none of this had happened.', contents: 'Guess who said this' } 
-
+// post: { title:'I wish the ring had never come to me. I wish none of this had happened.', contents: 'Guess who said this' } 
 router.post("/", (req, res) => {
   const { title, contents } = req.body;
 
@@ -84,13 +83,12 @@ router.post("/", (req, res) => {
     .catch(error => {
       // log error to database
       console.log(error);
-      res.status(500).json({ // Server error responose - possible to do 500 error on postman for POST request
+      res.status(500).json({ // Inner server error response
         error: "There was an error while saving the post to the database",
       });
     });
 });
 // Working on Postman
-
 
 // DELETE	/api/posts/:id - Removes the post with the specified id and 
 //? returns the deleted post object. 
@@ -98,10 +96,9 @@ router.post("/", (req, res) => {
 // When the client makes a DELETE request to /api/posts/:id:
 
 // If the post with the specified id is not found: return HTTP status code 404 (Not Found) & return the following JSON object: { message: "The post with the specified ID does not exist." }.
-
 // If there's an error in removing the post from the database: cancel the request, respond with HTTP status code 500. return the following JSON object: { error: "The post could not be removed" }.
 router.delete("/:id", (req, res) => {
-  const { id } = req.params;
+  const id = req.params.id;
 
   Posts
     .findById(id)
@@ -110,7 +107,9 @@ router.delete("/:id", (req, res) => {
         Posts
           .remove(id)
           .then(deleted => {
-            deleted ? res.status(200).json({ message: `Post ${id} was deleted`, info: (post) }) : res.status(404).json({ message: "The post with the specified ID does not exist."}); 
+            deleted ? 
+            res.status(200).json({ message: `Post ${id} was deleted`, info: (post) }) 
+          : res.status(404).json({ message: "The post with the specified ID does not exist."}); 
         })
       : null
       })
@@ -123,46 +122,42 @@ router.delete("/:id", (req, res) => {
 
 // PUT	/api/posts/:id	Updates the post with the specified id using data from the request body. Returns the modified document, NOT the original.
 /*
-If the post with the specified id is not found: return HTTP status code 404 (Not Found). return the following JSON object: { message: "The post with the specified ID does not exist." }.
+## If the post with the specified id is not found: return HTTP status code 404 (Not Found). return the following JSON object: { message: "The post with the specified ID does not exist." }.
 
-If the request body is missing the title or contents property: cancel the request.
+## If the request body is missing the title or contents property: cancel the request.
 respond with HTTP status code 400 (Bad Request).
 return the following JSON response: { errorMessage: "Please provide title and contents for the post." }.
-
 If there's an error when updating the post: cancel the request.
 respond with HTTP status code 500.
 return the following JSON object: { error: "The post information could not be modified." }.
-If the post is found and the new information is valid:
-
+## If the post is found and the new information is valid:
 update the post document in the database using the new information sent in the request body.
 return HTTP status code 200 (OK).
 return the newly updated post.
 */
 router.put("/:id", (req, res) => {
-  const { id } = req.params;
-  const changes = req.body;
   const { title, contents } = req.body;
+  const id = req.params.id;
+  const changes = req.body;
 
   !title || !contents // either or - if one of them is missing, err
   ? res.status(400).json({ errorMessage: "Please provide title and contents for the post." }) // Bad Request response - Worked on postman
 
   : Posts
-    .update(changes, id)
-    .then(updated => {
-      if (updated) {
-        res.status(200).json({ message: "Successfully Updated", changes });
-      } else {
+    .update(id, req.body)
+    .then(post => {
+      post ? 
+        res.status(200).json(req.body) :
         res
           .status(404)
           .json({
             message: "The post with the specified ID does not exist.",
           });
-      }
     })
     .catch(err => {
       res.status(500).json({ error: "The post information could not be modified." }); 
     });
-});
+  });
 // Worked postman
 
 
@@ -173,7 +168,7 @@ router.put("/:id", (req, res) => {
 ## If the post with the specified id is not found:
 return HTTP status code 404 (Not Found).
 return the following JSON object: { message: "The post with the specified ID does not exist." }.
-## If the request body is missing the text property: cancel the request. .end
+## If the request body is missing the text property: cancel the request. 
 respond with HTTP status code 400 (Bad Request).
 return the following JSON response: { errorMessage: "Please provide text for the comment." }.
 ## If the information about the comment is valid: save the new comment to the database.
@@ -215,7 +210,7 @@ router.post("/:id/comments", (req, res) => {
 // Working on Postman
 
 
-/* MH
+/* 
 GET	/api/posts/:id/comments	- Returns an array of all the comment objects associated with the post with the specified id.
 ## If the post with the specified id is not found:
 return HTTP status code 404 (Not Found).
@@ -255,13 +250,15 @@ First data base method
 //   });
 // })
 
-// Kara
 router.get('/:id/comments', (req, res) => {
   const { id } = req.params
+  
   Posts
     .findPostComments(id)
     .then(data => { // 200 response working on postman
-      data ? res.status(200).json(data) : res.status(404).json({ message: 'The Post ID Does NOT Exist.' }) // 404 working on postman
+      data ? 
+        res.status(200).json(data) 
+      : res.status(404).json({ message: 'The Post ID Does NOT Exist.' }) // 404 working on postman
     }) // If there's data, return 200. If not, return 404
     .catch(err => {
       res.status(500).json({

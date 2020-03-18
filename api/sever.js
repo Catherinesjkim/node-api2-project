@@ -11,9 +11,9 @@ server.use(express.json());
 server.use('/api/posts', postsRouter); // middleware
 // server.use('/posts', postsRouter);
 
-server.get('/', (req, res) => {
-  res.send('We are receiving data from Blogs Post API')
-})
+// server.get('/', (req, res) => {
+//   res.send('We are receiving data from Blogs Post API')
+// })
 
 // Defining all of the endpoints
 // json - clearer to the developer 
