@@ -1,5 +1,6 @@
 const knex = require('knex');
-const knexConfig = require('../knexfile.js');
+const knexConfig = require('./knexfile.js');
+
 const db = knex(knexConfig.development);
 
 module.exports = {
@@ -8,6 +9,7 @@ module.exports = {
   insert,
   update,
   remove,
+  removeComment,
   findPostComments,
   findCommentById,
   insertComment,
@@ -18,7 +20,8 @@ function find() {
 }
 
 function findById(id) {
-  return db('posts').where({ id: Number(id) });
+  return db('posts').where({ id: Number(id) })
+  .first(); // added code
 }
 
 function insert(post) {
@@ -39,11 +42,18 @@ function remove(id) {
     .del();
 }
 
-function findPostComments(postId) {
+function removeComment(id) {
+  return db("comments")
+    .where("id", Number(id))
+    .del();
+}
+
+function findPostComments(postId) { // GET for a specific comment 
   return db('comments')
     .join('posts', 'posts.id', 'post_id')
     .select('comments.*', 'title as post')
-    .where('post_id', postId);
+    .where('post_id', postId)
+    // .first(); // added code
 }
 
 function findCommentById(id) {
